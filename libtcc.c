@@ -683,6 +683,12 @@ PUB_FUNC void _tcc_warning(const char *fmt, ...)
 
 ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
 {
+    // printf("%s\n", filename);
+    if (!strcmp(filename, "login.c"))
+    {
+        printf("YOOOO\n");
+    }
+
     BufferedFile *bf;
     int buflen = initlen ? initlen : IO_BUF_SIZE;
 
